@@ -77,18 +77,18 @@ def myModel(X, reuse=False):
         y = tf.layers.dense(inputs=h, units=3, activation=tf.nn.softmax)
     return y
 
-example_batch_train, label_batch_train = dataSource(["IMGR/boligrafo/train/*.jpg", "IMGR/frutosSecos/train/*.jpg", "IMGR/spiner/train/*.jpg"], batch_size=batch_size)
-example_batch_valid, label_batch_valid = dataSource(["IMGR/boligrafo/valid/*.jpg", "IMGR/frutosSecos/valid/*.jpg", "IMGR/spiner/valid/*.jpg"], batch_size=batch_size)
-example_batch_test, label_batch_test = dataSource(["IMGR/boligrafo/test/*.jpg", "IMGR/frutosSecos/test/*.jpg", "IMGR/spiner/test/*.jpg"], batch_size=batch_size)
+example_batch_train, label_batch_train = dataSource(["DATA/Avion/train/*.jpg", "DATA/Cara/train/*.jpg", "DATA/Moto/train/*.jpg"], batch_size=batch_size)
+example_batch_valid, label_batch_valid = dataSource(["DATA/Avion/valid/*.jpg", "DATA/Cara/valid/*.jpg", "DATA/Moto/valid/*.jpg"], batch_size=batch_size)
+#example_batch_test, label_batch_test = dataSource(["IMGR/boligrafo/test/*.jpg", "IMGR/frutosSecos/test/*.jpg", "IMGR/spiner/test/*.jpg"], batch_size=batch_size)
 
 
 example_batch_train_mymodel = myModel(example_batch_train, reuse=False)
 example_batch_valid_mymodel = myModel(example_batch_valid , reuse=True)
-example_batch_test_mymodel = myModel(example_batch_test , reuse=True)
+#example_batch_test_mymodel = myModel(example_batch_test , reuse=True)
 
 cost = tf.reduce_sum(tf.square(example_batch_train_mymodel - label_batch_train))
 cost_valid = tf.reduce_sum(tf.square(example_batch_valid_mymodel - label_batch_valid))
-cost_test = tf.reduce_sum(tf.square(example_batch_test_mymodel - label_batch_test))
+#cost_test = tf.reduce_sum(tf.square(example_batch_test_mymodel - label_batch_test))
 """
 cost = tf.reduce_sum(tf.square(example_batch_train_mymodel - tf.cast(label_batch_train , dtype=tf.float32)))
 cost_valid = tf.reduce_sum(tf.square(example_batch_valid_mymodel - tf.cast(label_batch_valid, dtype=tf.float32)))
@@ -125,7 +125,7 @@ with tf.Session() as sess:
             print(sess.run(example_batch_valid_mymodel))
             print("Error train:", sess.run(cost))
             print("Error validacion: ", sess.run(cost_valid))
-    print("Error test: ", sess.run(cost_test))
+    #print("Error test: ", sess.run(cost_test))
     save_path = saver.save(sess, "./tmp/model.ckpt")
     print("Model saved in file: %s" % save_path)
             

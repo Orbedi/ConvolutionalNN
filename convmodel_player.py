@@ -55,11 +55,11 @@ with tf.Session() as sess:
         frame = gray.reshape(-1, 80, 140, 1)
         resultado = str(sess.run(y, feed_dict={x: frame}))
         if resultado == "[[1. 0. 0.]]":
-            print(resultado, "boligrafo")
+            print(resultado, "Avion")
         elif resultado == "[[0. 1. 0.]]":
-            print(resultado, "Frutos Secos")
+            print(resultado, "Cara")
         elif resultado == "[[0. 0. 1.]]":
-            print(resultado, "Spiner")
+            print(resultado, "Moto")
 
         print(sess.run(y, feed_dict={x: frame}))
         ch = 0xFF & cv2.waitKey(1)
