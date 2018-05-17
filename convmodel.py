@@ -3,6 +3,7 @@
 # Sample code to use string producer.
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 def one_hot(x, n):
     """
@@ -72,7 +73,7 @@ def myModel(X, reuse=False):
         o3 = tf.layers.conv2d(inputs=o2, filters=64, kernel_size=3, activation=tf.nn.relu)
         o4 = tf.layers.max_pooling2d(inputs=o3, pool_size=2, strides=2)
 
-        h = tf.layers.dense(inputs=tf.reshape(o4, [batch_size * 3, 18 * 33 * 64]), units=400, activation=tf.nn.relu)
+        h = tf.layers.dense(inputs=tf.reshape(o4, [batch_size * 3, 18 * 33 * 64]), units=5, activation=tf.nn.relu)
         # y = tf.layers.dense(inputs=h, units=3, activation=tf.nn.sigmoid)
         y = tf.layers.dense(inputs=h, units=3, activation=tf.nn.softmax)
     return y
@@ -117,17 +118,50 @@ with tf.Session() as sess:
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
-    for _ in range(400):
+    error_trains = []
+    error_valids = []
+
+    for _ in range(80):
         sess.run(optimizer)
         if _ % 20 == 0:
             print ("Iteracion: ", _)
-            print(sess.run(label_batch_valid))
-            print(sess.run(example_batch_valid_mymodel))
-            print("Error train:", sess.run(cost))
-            print("Error validacion: ", sess.run(cost_valid))
+            # print(sess.run(label_batch_valid)) #Etiquetas
+            # print(sess.run(example_batch_valid_mymodel))
+            error_train = sess.run(cost)
+            #error_valid = sess.run(cost_valid)
+            print("Error train:", error_train)
+            #print("Error validacion: ", error_valid)
+            #error_trains.append(error_train)
+            #error_valids.append(error_valid)
+
     #print("Error test: ", sess.run(cost_test))
+    aciertos = 0
+
+    for i in range(10):
+        resultado = sess.run(example_batch_valid_mymodel)
+        etiqueta = sess.run(label_batch_valid)
+        # print(resultado[0])
+
+        for res, eti in zip(resultado, etiqueta):
+            # print(eti)
+            # print(res)
+            if np.argmax(res) == np.argmax(eti):
+                aciertos += 1
+        # print(aciertos)
+        # print(len(etiqueta))
+
+    print("Porcentaje de acierto: ", (aciertos/float(len(etiqueta)*10))*100)
+
     save_path = saver.save(sess, "./tmp/model.ckpt")
     print("Model saved in file: %s" % save_path)
-            
+
     coord.request_stop()
     coord.join(threads)
+"""
+    plt_train, = plt.plot(error_trains, label='Error entrenamiento')
+    plt_valid, = plt.plot(error_valids, label='Error validacion')
+    plt.legend(handles=[plt_train,plt_valid])
+    plt.xlabel("epoch")
+    plt.ylabel("error")
+    plt.show()
+"""
